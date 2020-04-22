@@ -2,14 +2,19 @@ const express = require("express");
 const cors = require("cors");
 const mysql = require("mysql");
 const { ApolloServer, gql } = require("apollo-server-express");
+const DB_PASSWORD = require("./auth/dbPassword");
+
+// file reader libraries
+const fs = require("fs");
+const neatCsv = require("neat-csv");
 
 const app = express();
 
 const connection = mysql.createConnection({
   host: "localhost",
   user: "root",
-  password: "",
-  database: "",
+  password: DB_PASSWORD,
+  database: "STOCK",
 });
 
 connection.connect((err) => {
