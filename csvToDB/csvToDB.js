@@ -1,5 +1,17 @@
+const fs = require('fs')
+const neatCsv = require('neat-csv')
+const mysql = require("mysql");
+const DB_PASSWORD = require("../auth/dbPassword");
+
+const connection = mysql.createConnection({
+  host: "localhost",
+  user: "root",
+  password: DB_PASSWORD,
+  database: "STOCK",
+});
+
 function temp() {
-  fs.readFile("./nyse.csv", async (err, data) => {
+  fs.readFile(__dirname + "/nasdaq.csv", async (err, data) => {
     if (err) {
       console.error(err);
       return;
@@ -12,7 +24,7 @@ function temp() {
       let description = list[i].industry;
 
       await connection.query(
-        `insert into NYSE (symbol,name,industry,description) values (?,?,?,?)`,
+        `insert into NASDAQ (symbol,name,industry,description) values (?,?,?,?)`,
         [symbol, name, industry, description],
 
         function (err, res) {
@@ -27,4 +39,4 @@ function temp() {
   });
 }
 
-temp();
+module.exports = { temp }

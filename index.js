@@ -1,79 +1,70 @@
 const express = require("express");
 const cors = require("cors");
-const mysql = require("mysql");
-const { ApolloServer, gql } = require("apollo-server-express");
-const DB_PASSWORD = require("./auth/dbPassword");
+const { ApolloServer } = require("apollo-server-express");
 
-// file reader libraries
-const fs = require("fs");
-const neatCsv = require("neat-csv");
+
+const typeDefs = require('./type/typeDefs')
+const resolvers = require('./resolver/resolvers')
+
+const INTRA_DAILY_API_CALL = require('./apiCalls/oneMinute/oneMinute')
+const WEEKLY_API_CALL = require('./apiCalls/weekly/weekly')
+const MONTHLY_API_CALL = require('./apiCalls/monthly/monthly')
+const YEARLY_API_CALL = require('./apiCalls/yearly/yearly')
+const FIVE_YEAR_API_CALL = require('./apiCalls/fiveYear/fiveYear')
+const TWENTY_YEAR_API_CALL = require('./apiCalls/twentyYear/twentyYear')
 
 const app = express();
 
-const connection = mysql.createConnection({
-  host: "localhost",
-  user: "root",
-  password: DB_PASSWORD,
-  database: "STOCK",
-});
-
-connection.connect((err) => {
-  if (err) {
-    return err;
-  }
-});
-
 app.use(cors());
-
-let todos = [
-  {
-    id: 0,
-    text: "Hello from GraphQL",
-    completed: false,
-  },
-];
-
-const typeDefs = gql`
-  type Todo {
-    id: String
-    text: String
-    completed: Boolean
-  }
-  type Query {
-    todos: [Todo]!
-  }
-  type Mutation {
-    createTodo(text: String!): String
-    removeTodo(id: String!): String
-  }
-`;
-
-const resolvers = {
-  Query: {
-    todos: () => todos,
-  },
-  Mutation: {
-    createTodo: (parent, args, context, info) => {
-      return todos.push({
-        id: Date.now().toString(),
-        text: args.text,
-        completed: false,
-      });
-    },
-    removeTodo: (parent, args, context, info) => {
-      for (let i in todos) {
-        if (todos[i].id === args.id) {
-          todos.splice(i, 1);
-        }
-      }
-      return args.id;
-    },
-  },
-};
 
 const server = new ApolloServer({ typeDefs, resolvers });
 server.applyMiddleware({ app });
 
+app.get("/intradaily/:symbol", (req, res) => {
+	const symbol = req.params.symbol
+
+	INTRA_DAILY_API_CALL.ONE_MINUTE_API_CALL(symbol, '5', 'compact')
+		.then(data => res.send(data))
+		.catch(err => res.status.send({ message: err }))
+});
+
+app.get("/weekly/:symbol", (req, res) => {
+	const symbol = req.params.symbol
+
+	WEEKLY_API_CALL.WEEKLY_API_CALL(symbol, '5', 'full')
+		.then(data => res.send(data))
+		.catch(err => res.status.send({ message: err }))
+});
+
+app.get("/monthly/:symbol/:month", (req, res) => {
+	const symbol = req.params.symbol
+	const month = req.params.month
+	MONTHLY_API_CALL.MONTHLY_API_CALL(symbol, 'full', month)
+		.then(data => res.send(data))
+		.catch(err => res.status.send({ message: err }))
+});
+
+app.get("/yearly/:symbol", (req, res) => {
+	const symbol = req.params.symbol
+	YEARLY_API_CALL.YEARLY_API_CALL(symbol, 'full')
+		.then(data => res.send(data))
+		.catch(err => res.status.send({ message: err }))
+});
+
+app.get("/five-yearly/:symbol", (req, res) => {
+	const symbol = req.params.symbol
+	FIVE_YEAR_API_CALL.FIVE_YEAR_API_CALL(symbol, 'full')
+		.then(data => res.send(data))
+		.catch(err => res.status.send({ message: err }))
+});
+
+app.get("/over-twenty-year/:symbol", (req, res) => {
+	const symbol = req.params.symbol
+	TWENTY_YEAR_API_CALL.TWENTY_YEAR_API_CALL(symbol)
+		.then(data => res.send(data))
+		.catch(err => res.status.send({ message: err }))
+});
+
 app.listen({ port: 4000 }, () => {
-  console.log("The Midas server listening on port 4000");
+	console.log("The Midas server listening on port 4000");
 });
