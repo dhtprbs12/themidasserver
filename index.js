@@ -7,6 +7,7 @@ const typeDefs = require('./type/typeDefs')
 const resolvers = require('./resolver/resolvers')
 
 const INTRA_DAILY_API_CALL = require('./apiCalls/oneMinute/oneMinute')
+const DAILY_API_CALL = require('./apiCalls/daily/daily')
 const WEEKLY_API_CALL = require('./apiCalls/weekly/weekly')
 const MONTHLY_API_CALL = require('./apiCalls/monthly/monthly')
 const YEARLY_API_CALL = require('./apiCalls/yearly/yearly')
@@ -24,6 +25,14 @@ app.get("/intradaily/:symbol", (req, res) => {
 	const symbol = req.params.symbol
 
 	INTRA_DAILY_API_CALL.ONE_MINUTE_API_CALL(symbol, '5', 'compact')
+		.then(data => res.send(data))
+		.catch(err => res.status.send({ message: err }))
+});
+
+app.get("/daily/:symbol", (req, res) => {
+	const symbol = req.params.symbol
+
+	DAILY_API_CALL.DAILY_API_CALL(symbol)
 		.then(data => res.send(data))
 		.catch(err => res.status.send({ message: err }))
 });

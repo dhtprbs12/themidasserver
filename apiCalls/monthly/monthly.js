@@ -51,7 +51,8 @@ const MONTHLY_API_CALL = async (symbol, outputSize, month) => {
 				open: json["Time Series (Daily)"][key]["1. open"],
 				high: json["Time Series (Daily)"][key]["2. high"],
 				low: json["Time Series (Daily)"][key]["3. low"],
-				close: json["Time Series (Daily)"][key]["4. close"],
+				close: json["Time Series (Daily)"][key]["5. adjusted close"],
+				volume: json["Time Series (Daily)"][key]["6. volume"],
 			};
 			array.push(obj);
 		}

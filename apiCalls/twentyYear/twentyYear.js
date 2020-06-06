@@ -48,7 +48,8 @@ const TWENTY_YEAR_API_CALL = async (symbol) => {
       open: json["Monthly Adjusted Time Series"][key]["1. open"],
       high: json["Monthly Adjusted Time Series"][key]["2. high"],
       low: json["Monthly Adjusted Time Series"][key]["3. low"],
-      close: json["Monthly Adjusted Time Series"][key]["4. close"],
+      close: json["Monthly Adjusted Time Series"][key]["5. adjusted close"],
+      volume: json["Monthly Adjusted Time Series"][key]["6. volume"],
     };
     array.push(obj);
   }

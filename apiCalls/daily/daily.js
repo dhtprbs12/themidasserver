@@ -17,17 +17,19 @@ async function myFunc(){
 }
 -> hello 찍고 3초뒤 thisFunctionWillReturnPromoseObjectAfter3sec(3) 실행
 */
-const ONE_MINUTE_API_CALL = async (symbol, min, outputSize) => {
+const DAILY_API_CALL = async (symbol) => {
 	/*
     Or, we can do
-    async function getUserAsync(name) 
-    {
+    async function getUserAsync(name) {
         await fetch(`https://api.github.com/users/${name}`).then(async (response)=> {
         return await response.json()
     }
     */
 
-	const API_CALL = `https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=${symbol}&interval=${min}min&outputsize=${outputSize}&apikey=${API_KEY}`;
+	/* compact: 100 historical data of day
+		 full: 20+ years historical data of day
+	*/
+	const API_CALL = `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&symbol=${symbol}&apikey=${API_KEY}`;
 
 	const response = await fetch(API_CALL);
 
@@ -38,18 +40,20 @@ const ONE_MINUTE_API_CALL = async (symbol, min, outputSize) => {
 	const array = [];
 	const json = await response.json();
 
-	for (var key in json[`Time Series (${min}min)`]) {
+	for (var key in json["Time Series (Daily)"]) {
+		var date = new Date(key);
 		const obj = {
 			date: key,
-			open: json[`Time Series (${min}min)`][key]["1. open"],
-			high: json[`Time Series (${min}min)`][key]["2. high"],
-			low: json[`Time Series (${min}min)`][key]["3. low"],
-			close: json[`Time Series (${min}min)`][key]["4. close"],
-			volume: json[`Time Series (${min}min)`][key]["5. volume"]
+			open: json["Time Series (Daily)"][key]["1. open"],
+			high: json["Time Series (Daily)"][key]["2. high"],
+			low: json["Time Series (Daily)"][key]["3. low"],
+			close: json["Time Series (Daily)"][key]["5. adjusted close"],
+			volume: json["Time Series (Daily)"][key]["6. volume"],
 		};
 		array.push(obj);
+		break;
 	}
-	return array.reverse();
+	return array;
 };
 
-module.exports = { ONE_MINUTE_API_CALL };
+module.exports = { DAILY_API_CALL };

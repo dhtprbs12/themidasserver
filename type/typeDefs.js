@@ -9,24 +9,19 @@ module.exports = gql`
 		description: String
 		mission: String
 	}
+	type Feedback {
+		id: String
+		firstName: String
+		lastName: String
+		email: String
+		feedback: String
+	}
 	type Query {
 		companies(type: String!, id: Int!, industry: String!): [Company]
 		autoCompleteCompanies(name: String!): [Company]
+		feedbacks(id: Int): [Feedback]
+	}
+	type Mutation {
+		createFeedback(firstName: String!, lastName: String!, email: String!, feedback: String!): String
 	}
 `
-
-
-// const typeDefs = gql`
-// 	type Todo {
-// 		id: String
-// 		text: String
-// 		completed: Boolean
-// 	}
-// 	type Query {
-// 		todos: [Todo]!
-// 	}
-// 	type Mutation {
-// 		createTodo(text: String!): String
-// 		removeTodo(id: String!): String
-// 	}
-// `;

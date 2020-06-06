@@ -51,6 +51,7 @@ await fetch(`https://api.github.com/users/${name}`).then(async (response)=> {
 				high: json[`Time Series (${min}min)`][key]["2. high"],
 				low: json[`Time Series (${min}min)`][key]["3. low"],
 				close: json[`Time Series (${min}min)`][key]["4. close"],
+				volume: json[`Time Series (${min}min)`][key]["5. volume"],
 			};
 
 			array.push(obj);
