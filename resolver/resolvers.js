@@ -1,10 +1,9 @@
 const mysql = require("mysql");
-const DB_PASSWORD = require("../auth/dbPassword");
 
 const connection = mysql.createConnection({
 	host: "localhost",
 	user: "root",
-	password: DB_PASSWORD,
+	password: '',
 	database: "STOCK",
 });
 
