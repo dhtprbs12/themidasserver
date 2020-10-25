@@ -13,6 +13,7 @@ const MONTHLY_API_CALL = require('./apiCalls/monthly/monthly')
 const YEARLY_API_CALL = require('./apiCalls/yearly/yearly')
 const FIVE_YEAR_API_CALL = require('./apiCalls/fiveYear/fiveYear')
 const TWENTY_YEAR_API_CALL = require('./apiCalls/twentyYear/twentyYear')
+const COMPANY_ANALYSIS_API_CALL = require('./apiCalls/companyAnalysis/companyAnalysis')
 
 // yahoo finance API
 const GET_COMPANY_ANALYSIS = require('./yahooFinance/index')
@@ -77,6 +78,13 @@ app.get("/over-twenty-year/:symbol", (req, res) => {
 		.catch(err => res.status.send({ message: err }))
 });
 
+app.get('/company-analysis:symbol', (req, res) => {
+	const symbol = req.params.symbol
+	COMPANY_ANALYSIS_API_CALL.COMPANY_ANALYSIS_API_CALL(symbol).then(data => res.send(data)).catch(err => res.status.send({ message: err }))
+})
+
+// Yahoo finance API
+
 app.get('/get-company-analysis/:symbol', (req, res) => {
 	const symbol = req.params.symbol
 	GET_COMPANY_ANALYSIS.GET_COMPANY_ANALYSIS(symbol)
@@ -91,4 +99,3 @@ app.listen({ port: 4000 }, () => {
 	console.log("The Midas server listening on port 4000");
 });
 
-// Yahoo finance API
