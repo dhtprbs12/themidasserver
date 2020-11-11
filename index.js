@@ -78,11 +78,14 @@ app.get("/over-twenty-year/:symbol", (req, res) => {
 		.catch(err => res.status.send({ message: err }))
 });
 
-app.get('/company-analysis:symbol', (req, res) => {
+app.get('/company-analysis/:symbol', async (req, res) => {
 	const symbol = req.params.symbol
-	COMPANY_ANALYSIS_API_CALL.COMPANY_ANALYSIS_API_CALL(symbol)
-		.then(data => res.send(data))
-		.catch(err => res.status.send({ message: err }))
+	try {
+		const data = await COMPANY_ANALYSIS_API_CALL.COMPANY_ANALYSIS_API_CALL(symbol)
+		res.send(data)
+	} catch (err) {
+		res.status(401).send(new Error(err))
+	}
 })
 
 // Yahoo finance API
