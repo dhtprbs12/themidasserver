@@ -34,11 +34,11 @@ const COMPANY_CURRENT_PRICE_API_CALL = async (symbol) => {
 
   return new Promise((resolve, reject) => {
     fetch(API_CALL)
-      .then(res => {
+      .then(async res => {
         if (!res.ok) {
           throw new Error(res.statusText)
         }
-        const json = res.json()
+        const json = await res.json()
         const global = json['Global Quote']
         const currentPrice = global['05. price']
         resolve(currentPrice)

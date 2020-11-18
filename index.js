@@ -14,7 +14,8 @@ const YEARLY_API_CALL = require('./apiCalls/yearly/yearly')
 const FIVE_YEAR_API_CALL = require('./apiCalls/fiveYear/fiveYear')
 const TWENTY_YEAR_API_CALL = require('./apiCalls/twentyYear/twentyYear')
 const COMPANY_ANALYSIS_API_CALL = require('./apiCalls/companyAnalysis/companyAnalysis')
-
+// const populateDataFromCSV = require('./csvToDB/csvToDB')
+// populateDataFromCSV.temp()
 // yahoo finance API
 const GET_COMPANY_ANALYSIS = require('./yahooFinance/index')
 
@@ -87,7 +88,6 @@ app.get('/company-analysis/:symbol', async (req, res) => {
 		res.status(401).send(new Error(err))
 	}
 })
-
 // Yahoo finance API
 
 app.get('/get-company-analysis/:symbol', (req, res) => {

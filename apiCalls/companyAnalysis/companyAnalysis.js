@@ -19,27 +19,26 @@ async function myFunc(){
 -> hello 찍고 3초뒤 thisFunctionWillReturnPromoseObjectAfter3sec(3) 실행
 */
 
-function extractValues(json, symbol) {
+async function extractValues(json, symbol) {
 
-  // const currentPrice = await COMPANY_CURRENT_PRICE_API_CALL.COMPANY_CURRENT_PRICE_API_CALL(symbol)
+  const currentPrice = await COMPANY_CURRENT_PRICE_API_CALL.COMPANY_CURRENT_PRICE_API_CALL(symbol)
 
-  const actualPER = Math.abs(currentPrice / EPS)
   const PER = json['PERatio']
   const EPS = json['EPS']
 
   const PBR = json['PriceToBookRatio']
   const BPS = json['BookValue']
 
-
+  const actualPER = Math.abs(currentPrice / EPS)
   const shortTerm = Math.abs((PER * EPS).toFixed(2))
   const longTerm = Math.abs((PBR * BPS).toFixed(2))
 
   const isNonSensePER = (PER > (actualPER + 5)) || (PER < (actualPER - 5))
 
   if (PER === 'None' || PER === '0' || PER === 0 || isNonSensePER) {
-    return { currentPrice: Number(0), shortTerm: null, longTerm: longTerm }
+    return { currentPrice: Number(0), shortTerm: 0, longTerm: longTerm }
   }
-  return { currentPrice: 0, shortTerm: shortTerm, longTerm: longTerm }
+  return { currentPrice: Number(currentPrice), shortTerm: shortTerm, longTerm: longTerm }
 }
 
 const COMPANY_ANALYSIS_API_CALL = (symbol) => {
@@ -50,39 +49,15 @@ const COMPANY_ANALYSIS_API_CALL = (symbol) => {
       if (!res.ok) {
         throw new Error(res.statusText)
       }
-      return extractValues(await res.json(), symbol)
+      const json = await res.json()
+      const temp = await extractValues(json, symbol)
+
+      return temp
     })
     .catch(err => {
+      // actual error returns here e.g. cannot read of undefined
       throw new Error(err)
     })
-
-  // const response = await fetch(API_CALL);
-
-  // if (!response.ok) {
-  //   throw new Error(response.statusText);
-  // }
-
-  // const json = await response.json()
-
-  // const currentPrice = await COMPANY_CURRENT_PRICE_API_CALL.COMPANY_CURRENT_PRICE_API_CALL(symbol)
-
-  // const actualPER = Math.abs(currentPrice / EPS)
-  // const PER = json['PERatio']
-  // const EPS = json['EPS']
-
-  // const PBR = json['PriceToBookRatio']
-  // const BPS = json['BookValue']
-
-
-  // const shortTerm = Math.abs((PER * EPS).toFixed(2))
-  // const longTerm = Math.abs((PBR * BPS).toFixed(2))
-
-  // const isNonSensePER = (PER > (actualPER + 5)) || (PER < (actualPER - 5))
-
-  // if (PER === 'None' || PER === '0' || PER === 0 || isNonSensePER) {
-  //   return { currentPrice: Number(currentPrice), shortTerm: null, longTerm: longTerm }
-  // }
-  // return { currentPrice: currentPrice, shortTerm: shortTerm, longTerm: longTerm }
 };
 
 module.exports = { COMPANY_ANALYSIS_API_CALL };

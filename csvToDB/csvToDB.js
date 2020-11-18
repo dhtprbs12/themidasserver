@@ -10,7 +10,7 @@ const connection = mysql.createConnection({
 });
 
 function temp() {
-  fs.readFile(__dirname + "/nasdaq.csv", async (err, data) => {
+  fs.readFile(__dirname + "/constituents-financials.csv", async (err, data) => {
     if (err) {
       console.error(err);
       return;
@@ -23,7 +23,7 @@ function temp() {
       let description = list[i].industry;
 
       await connection.query(
-        `insert into NASDAQ (symbol,name,industry,description) values (?,?,?,?)`,
+        `insert into SP500 (symbol,name,industry,description) values (?,?,?,?)`,
         [symbol, name, industry, description],
 
         function (err, res) {
@@ -37,7 +37,5 @@ function temp() {
     }
   });
 }
-
-temp();
 
 module.exports = { temp }

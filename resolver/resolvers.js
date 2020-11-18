@@ -42,7 +42,7 @@ module.exports = {
 					`select * from AMEX  where name LIKE '${name}%'
 						union select * from NASDAQ where name LIKE '${name}%'
 						union select * from NYSE where name LIKE '${name}%'
-						union select * from SP500 where name LIKE '${name}%';`, function (err, res) {
+						union select * from SP500 where name LIKE '${name}%' limit 10;`, function (err, res) {
 					if (err) {
 						console.log(`Error while selecting with UNION '${name}' -- ERROR: ${err}`);
 						reject(err)
@@ -59,7 +59,7 @@ module.exports = {
 			const id = args.id
 			return new Promise((resolve, reject) => {
 				connection.query(
-					`select * from FEEDBACK limit 0, 100`, function (err, res) {
+					`select * from FEEDBACKS limit 0, 100`, function (err, res) {
 						if (err) {
 							console.log(`Error while getting FEEDBACK -- ERROR: ${err}`);
 							reject(err)
@@ -79,7 +79,7 @@ module.exports = {
 			const lastName = args.lastName
 			const email = args.email
 			const feedback = args.feedback
-			const query = 'insert into FEEDBACK (firstName, lastName, email, feedback) values (?,?,?,?)'
+			const query = 'insert into FEEDBACKS (firstName, lastName, email, feedback) values (?,?,?,?)'
 			return new Promise((resolve, reject) => {
 				connection.query(query, [firstName, lastName, email, feedback], function (err, res) {
 					if (err) {
