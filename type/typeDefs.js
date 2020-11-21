@@ -15,6 +15,8 @@ module.exports = gql`
 		lastName: String
 		email: String
 		feedback: String
+		title: String
+		createdAt: String
 	}
 	type Query {
 		companies(type: String!, id: Int!, industry: String!): [Company]
@@ -22,6 +24,6 @@ module.exports = gql`
 		feedbacks(id: Int): [Feedback]
 	}
 	type Mutation {
-		createFeedback(firstName: String!, lastName: String!, email: String!, feedback: String!): String
+		createFeedback(firstName: String!, lastName: String!, email: String!, feedback: String!, title: String!): String
 	}
 `

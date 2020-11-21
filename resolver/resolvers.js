@@ -79,9 +79,10 @@ module.exports = {
 			const lastName = args.lastName
 			const email = args.email
 			const feedback = args.feedback
-			const query = 'insert into FEEDBACKS (firstName, lastName, email, feedback) values (?,?,?,?)'
+			const title = args.title
+			const query = 'insert into FEEDBACKS (firstName, lastName, email, feedback, title) values (?,?,?,?,?)'
 			return new Promise((resolve, reject) => {
-				connection.query(query, [firstName, lastName, email, feedback], function (err, res) {
+				connection.query(query, [firstName, lastName, email, feedback, title], function (err, res) {
 					if (err) {
 						console.log(`Error while createFeedback -- ERROR: ${err}`);
 						reject(err)
