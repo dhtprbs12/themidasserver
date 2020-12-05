@@ -32,34 +32,21 @@ const COMPANY_CURRENT_PRICE_API_CALL = async (symbol) => {
 
   const API_CALL = `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${symbol}&apikey=${API_KEY}`;
 
-  return new Promise((resolve, reject) => {
-    fetch(API_CALL)
-      .then(async res => {
-        if (!res.ok) {
-          throw new Error(res.statusText)
-        }
-        const json = await res.json()
-        const global = json['Global Quote']
-        const currentPrice = global['05. price']
-        resolve(currentPrice)
-      })
-      .catch(err => {
-        reject(err)
-      })
-  })
+  const response = await fetch(API_CALL);
 
-  // const response = await fetch(API_CALL);
+  if (!response.ok) {
+    throw new Error(response.statusText);
+  }
 
-  // if (!response.ok) {
-  //   throw new Error(response.statusText);
-  // }
+  if (response.status > 200) {
+    throw new Error(response.statusText);
+  }
 
+  const json = await response.json();
+  const global = json["Global Quote"];
+  const currentPrice = global["05. price"];
 
-  // const json = await response.json();
-  // const global = json['Global Quote']
-  // const currentPrice = global['05. price']
-
-  // return currentPrice
+  return currentPrice;
 };
 
 module.exports = { COMPANY_CURRENT_PRICE_API_CALL };

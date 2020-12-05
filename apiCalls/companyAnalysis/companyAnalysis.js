@@ -1,6 +1,6 @@
 const API_KEY = require("../../auth/apiKeyAdjusted");
 const fetch = require("node-fetch");
-const COMPANY_CURRENT_PRICE_API_CALL = require('../currentPrice/currentPrice')
+const COMPANY_CURRENT_PRICE_API_CALL = require("../currentPrice/currentPrice");
 
 /* Promise 를 리턴하면 then을 쓸수 있음
 await 은 Promise 가 resolved 되어서 결과값이 넘어 올 때까지 기다리는 명령어 
@@ -20,44 +20,54 @@ async function myFunc(){
 */
 
 async function extractValues(json, symbol) {
+  try {
+    const currentPrice = await COMPANY_CURRENT_PRICE_API_CALL.COMPANY_CURRENT_PRICE_API_CALL(
+      symbol
+    );
 
-  const currentPrice = await COMPANY_CURRENT_PRICE_API_CALL.COMPANY_CURRENT_PRICE_API_CALL(symbol)
+    let PER = json["PERatio"];
+    const EPS = json["EPS"];
 
-  const PER = json['PERatio']
-  const EPS = json['EPS']
+    const PBR = json["PriceToBookRatio"];
+    const BPS = json["BookValue"];
 
-  const PBR = json['PriceToBookRatio']
-  const BPS = json['BookValue']
+    const tempPER = Math.abs(currentPrice / EPS);
+    if (isNaN(PER) || PER === 0 || PER > tempPER + 5 || PER < tempPER - 5) {
+      PER = tempPER;
+    }
+    const shortTerm = Math.abs((PER * EPS).toFixed(2));
+    const longTerm = Math.abs((PBR * BPS).toFixed(2));
 
-  const actualPER = Math.abs(currentPrice / EPS)
-  const shortTerm = Math.abs((PER * EPS).toFixed(2))
-  const longTerm = Math.abs((PBR * BPS).toFixed(2))
-
-  const isNonSensePER = (PER > (actualPER + 5)) || (PER < (actualPER - 5))
-
-  if (PER === 'None' || PER === '0' || PER === 0 || isNonSensePER) {
-    return { currentPrice: Number(0), shortTerm: 0, longTerm: longTerm }
+    if (PER === "None" || PER === "0" || PER === 0) {
+      return { currentPrice: Number(0), shortTerm: 0, longTerm: longTerm };
+    }
+    return {
+      currentPrice: Number(currentPrice),
+      shortTerm: shortTerm,
+      longTerm: longTerm,
+    };
+  } catch (err) {
+    throw new Error(err);
   }
-  return { currentPrice: Number(currentPrice), shortTerm: shortTerm, longTerm: longTerm }
 }
 
-const COMPANY_ANALYSIS_API_CALL = (symbol) => {
+const COMPANY_ANALYSIS_API_CALL = async (symbol) => {
   const API_CALL = `https://www.alphavantage.co/query?function=OVERVIEW&symbol=${symbol}&apikey=${API_KEY}`;
-  // returning fetch here means returning Promise, so we need await from caller
-  return fetch(API_CALL)
-    .then(async res => {
-      if (!res.ok) {
-        throw new Error(res.statusText)
-      }
-      const json = await res.json()
-      const temp = await extractValues(json, symbol)
 
-      return temp
-    })
-    .catch(err => {
-      // actual error returns here e.g. cannot read of undefined
-      throw new Error(err)
-    })
+  const response = await fetch(API_CALL);
+
+  if (!response.ok) {
+    throw new Error(response.statusText);
+  }
+
+  if (response.status > 200) {
+    throw new Error(response.statusText);
+  }
+
+  const json = await response.json();
+  const result = await extractValues(json, symbol);
+
+  return result;
 };
 
 module.exports = { COMPANY_ANALYSIS_API_CALL };
